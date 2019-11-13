@@ -1,9 +1,11 @@
 #include "ros/ros.h"
 #include "sensor_msgs/Imu.h"
 #include "tf/transform_datatypes.h"
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <math.h>
 
-int main(int argc, char **argv)
+    int
+    main(int argc, char **argv)
 {
   /* code */
   ros::init(argc, argv, "simulate_imu_robot_moving");
@@ -24,15 +26,16 @@ int main(int argc, char **argv)
     float x = 0, y = 0, theta = 0;
     int count = 0;
 
-    tf::Quaternion q;
-    double yaw;
-    q = tf::createQuaternionFromRPY(0, 0, theta);
+    tf2::Quaternion q;
 
     /* Craft our new message
     according to august*/
     x = x + (0.1 * cos(theta));
     y = y + (0.1 * sin(theta));
     theta = 0.05 * count;
+
+    /* TODO in progress.... */
+    tf2::convert(commanded_pose.pose.orientation , q);
 
     /* Transform to quaternions of orientation of our message*/
     new_imu_msg.orientation.w = q.w;
