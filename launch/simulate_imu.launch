@@ -1,0 +1,6 @@
+<launch>
+
+    <node pkg="tether_manager" name="sim" type="simulate_imu"/>
+    <node pkg="tether_manager" name="sim" type="tether_turn_counter.py"/>
+
+</launch>
