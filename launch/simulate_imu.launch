@@ -1,6 +1,7 @@
 <launch>
-
-    <node pkg="tether_manager" name="sim" type="simulate_imu"/>
-    <node pkg="tether_manager" name="sim" type="tether_turn_counter.py"/>
+  <group ns="simu">
+    <node name="tether_turn_counter" pkg="tether_manager" type="tether_turn_counter.py"/>
+    <node name="simulate_imu" pkg="tether_manager" type="simulate_imu"/>
+  </group>
 
 </launch>
