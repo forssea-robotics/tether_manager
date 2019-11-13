@@ -1,49 +1,56 @@
 #include "ros/ros.h"
 #include "sensor_msgs/Imu.h"
+#include "geometry_msgs/Pose2D.h"
 #include "tf/transform_datatypes.h"
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 #include <math.h>
 
-    int
-    main(int argc, char **argv)
-{
-  /* code */
-  ros::init(argc, argv, "simulate_imu_robot_moving");
+#define REFRESH_FREQ 0.1
 
+main(int argc, char **argv)
+{
+  int count = 0;
+
+  /* Use this type of message to offer 
+  possibility to get other source of position
+  for testing (i.e. turtlesim) */
+  geometry_msgs::Pose2D simuPosition;
+
+  ros::init(argc, argv, "simulate_imu_moving_robot");
   ros::NodeHandle n;
 
   /*Advertise master and get publisher*/
   ros::Publisher pub = n.advertise<sensor_msgs::Imu>("imu_input", 1000);
+  ros::Rate loop_rate(REFRESH_FREQ);
+  
+  /*Init fake position*/
+  simuPosition.x = 0;
+  simuPosition.y = 0;
+  simuPosition.theta = 0;
 
-  ros::Rate loop_rate(1);
-
-  int count = 0;
   while (ros::ok())
   {
-
     /* Declare our msg*/
     sensor_msgs::Imu new_imu_msg;
-    float x = 0, y = 0, theta = 0;
-    int count = 0;
 
-    tf2::Quaternion q;
+    /*Assume that the deltax and deltay are
+    constant during deltat which is 1/REFRESH_FREQ*/
+    /* First of all... we need to recalculate new theta*/
+    simuPosition.theta = REFRESH_FREQ / 2 * count;
+    simuPosition.x = simuPosition.x + (REFRESH_FREQ * cos(simuPosition.theta));
+    simuPosition.y = simuPosition.y + (REFRESH_FREQ * sin(simuPosition.theta));
 
-    /* Craft our new message
-    according to august*/
-    x = x + (0.1 * cos(theta));
-    y = y + (0.1 * sin(theta));
-    theta = 0.05 * count;
-
-    /* TODO in progress.... */
-    tf2::convert(commanded_pose.pose.orientation , q);
+    /* Convert position to new quaternion
+    Assume that only yaw is significant */
+    tf::Quaternion q = tf::createQuaternionFromYaw(simuPosition.theta);
 
     /* Transform to quaternions of orientation of our message*/
-    new_imu_msg.orientation.w = q.w;
-    new_imu_msg.orientation.x = q.x;
-    new_imu_msg.orientation.y = q.y;
-    new_imu_msg.orientation.z = q.z;
+    new_imu_msg.orientation.w = q.getW();
+    new_imu_msg.orientation.x = q.getX();
+    new_imu_msg.orientation.y = q.getY();
+    new_imu_msg.orientation.z = q.getZ();
 
-    ROS_INFO("New value are x=%f y=%f theta=%f at count=%d", x, y, theta, count);
+    ROS_INFO_STREAM(new_imu_msg);
 
     /*publish our msg*/
     pub.publish(new_imu_msg);
