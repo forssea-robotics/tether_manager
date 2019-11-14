@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "sensor_msgs/Imu.h"
+#include "tf/LinearMath/Quaternion.h"
 
 #include <math.h>
 
@@ -25,11 +26,13 @@ int main(int argc, char **argv)
         theta = 0.05 * k;
         ++k;
 
-        // TODO update msg.orientation passing from (x, y, theta) to a quaternion
-        msg.orientation.w = 0.0;
-        msg.orientation.x = 0.0;
-        msg.orientation.y = 0.0;
-        msg.orientation.z = 0.0;
+        tf::Quaternion q;
+        q.setEuler(theta, 0.0, 0.0);
+
+        msg.orientation.w = q.getW();
+        msg.orientation.x = q.getX();
+        msg.orientation.y = q.getY();
+        msg.orientation.z = q.getZ();
 
         // publish
         imu_publisher.publish(msg);
