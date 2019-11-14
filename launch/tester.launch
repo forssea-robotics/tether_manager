@@ -1,0 +1,4 @@
+<launch>
+  <node name="tester" pkg="tether_manager" type="turn_counter_tester" />
+  <node name="tether_turn_counter" pkg="tether_manager" type="tether_turn_counter.py" />
+</launch>

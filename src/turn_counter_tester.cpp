@@ -35,6 +35,7 @@ int main(int argc, char **argv)
         msg.orientation.z = q.getZ();
 
         // publish
+        ROS_INFO("Publishing IMU message");
         imu_publisher.publish(msg);
 
         ros::spinOnce();
