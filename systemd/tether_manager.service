@@ -1,0 +1,17 @@
+[Unit]
+Description=tether_manager service
+After=multi-user.target
+StartLimitIntervalSec=1
+StartLimitBurst=3
+
+[Service]
+Type=idle
+Restart=always
+RestartSec=500ms
+Environment=ROS_LOG_DIR=/var/log/ros
+Environment=AMENT_PREFIX_PATH=/
+EnvironmentFile=/lib/share/tether_manager.env
+ExecStart=ros2 run tether_manager tether_turn_counter --ros-args --params-file /lib/ros_config/tether_manager.yaml  -r __node:=${NODE_NAME} -r __ns:=${NODE_NAMESPACE}
+
+[Install]
+WantedBy=multi-user.target
